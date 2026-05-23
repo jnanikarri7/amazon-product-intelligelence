@@ -1,0 +1,71 @@
+# Amazon Product Discovery Configuration
+
+discovery:
+  domain_id: 1  # 1=US, 2=UK, 3=DE, 4=FR, etc.
+
+  filters:
+    price_min: 1500  # Keepa uses cents ($15.00)
+    price_max: 4000  # $40.00
+    sales_rank_max: 50000
+    new_offer_count_max: 15
+    rating_min: 35  # Keepa uses 10x scale (3.5 stars)
+    review_count_max: 1000
+    review_count_min: 10  # Minimum social proof
+
+  # Product Finder can return up to 10k ASINs per call
+  max_results: 100
+
+  # Optional category exclusions (Keepa category IDs)
+  # exclude_categories:
+  #   - 172282  # Electronics
+  #   - 3760911  # Health supplements
+
+  # Optional root category filter
+  # root_category: 2619533011  # Home & Kitchen
+
+scoring:
+  weights:
+    demand: 0.30
+    competition: 0.25
+    margin: 0.20
+    simplicity: 0.15
+    price_stability: 0.10
+
+  thresholds:
+    # Demand scoring
+    sales_rank_excellent: 10000
+    sales_rank_good: 30000
+    sales_rank_acceptable: 50000
+
+    # Competition scoring
+    seller_count_low: 5
+    seller_count_medium: 10
+    seller_count_high: 15
+
+    review_barrier_high: 500
+    review_barrier_medium: 200
+    review_barrier_low: 50
+
+    # Margin scoring
+    price_ideal_min: 20.00
+    price_ideal_max: 35.00
+
+    # Simplicity (by review count as proxy for complexity)
+    simple_review_max: 100
+    moderate_review_max: 500
+
+    # Price stability (coefficient of variation)
+    stable_cv_max: 0.10
+    moderate_cv_max: 0.20
+
+export:
+  csv_path: data/processed/opportunities.csv
+  json_path: data/processed/opportunities.json
+  top_n: 50  # Export top N scored products
+
+database:
+  path: data/amazon_products.db
+
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
