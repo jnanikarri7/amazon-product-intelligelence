@@ -15,6 +15,7 @@ from deltalake import DeltaTable, write_deltalake
 
 from . import quality as dq
 from .config import BRONZE_DIR, SILVER_DIR
+from .teams import normalize as normalize_team
 
 # Validation bounds (sanity-checked against the real 2015-2026 data).
 EPA_LO, EPA_HI = -15.0, 15.0            # observed ~[-12.7, 8.5]
@@ -52,6 +53,9 @@ def build_silver_pbp() -> pl.DataFrame:
 
     df = (
         df
+        # 0. Conform team identity across relocations (SD->LAC, STL->LAR, OAK->LV).
+        .with_columns(normalize_team("posteam"), normalize_team("defteam"),
+                      normalize_team("home_team"), normalize_team("away_team"))
         # 1. Deduplicate on the natural key.
         .unique(subset=["game_id", "play_id"], keep="first")
         # 2. Null-possession plays (kickoffs, timeouts, end-of-quarter) are out.
@@ -94,6 +98,7 @@ def build_silver_schedules() -> pl.DataFrame:
     df = (
         df
         .unique(subset=["game_id"], keep="first")
+        .with_columns(normalize_team("home_team"), normalize_team("away_team"))
         .with_columns(
             # Dome / retractable-closed games are climate-controlled.
             pl.col("roof").is_in(["dome", "closed"]).alias("is_dome"),

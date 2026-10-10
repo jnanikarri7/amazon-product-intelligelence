@@ -16,7 +16,7 @@ nflreadpy ──► Bronze (raw Delta) ──► Silver (clean + DQ) ──► G
 - [x] **Phase 1 — Environment & cost-optimized architecture** → see [`docs/phase1_architecture.md`](docs/phase1_architecture.md)
 - [x] **Phase 2 — Bronze ingestion** (`nflreadpy`, 2015–present) → see [`docs/phase2_bronze.md`](docs/phase2_bronze.md)
 - [x] **Phase 3 — Silver** (cleaning, DQ, Z-ORDER) → see [`docs/phase3_silver.md`](docs/phase3_silver.md)
-- [ ] Phase 4 — Gold (feature engineering, leakage-safe feature table)
+- [x] **Phase 4 — Gold** (leakage-safe feature engineering) → see [`docs/phase4_gold.md`](docs/phase4_gold.md)
 - [ ] Phase 5 — MLOps (walk-forward CV, MLflow tracking + registry)
 - [ ] Phase 6 — CI/CD (GitHub Actions + Databricks Workflows) & portfolio README
 
