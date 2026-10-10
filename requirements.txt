@@ -8,8 +8,13 @@ nflreadpy>=0.1.0        # Python port of nflverse (polars-based readers)
 polars>=1.0.0           # nflreadpy returns polars DataFrames
 pyarrow>=14.0.0         # polars <-> pandas <-> spark zero-copy bridge
 
-# ---- Phases 4–6 (not needed yet, listed for completeness) ----
-# lightgbm>=4.3.0
-# xgboost>=2.0.0
-# scikit-learn>=1.4.0
-# great-expectations>=0.18.0
+# ---- Phase 4-5: feature engineering + modeling ----
+deltalake>=1.0.0        # local Delta read/write (delta-rs), no Spark/Java needed
+lightgbm>=4.3.0
+xgboost>=2.0.0
+scikit-learn>=1.4.0
+mlflow>=3.0.0           # experiment tracking + model registry
+matplotlib>=3.8.0       # feature-importance plots
+
+# ---- Windows corporate TLS (local runs behind a proxy only) ----
+pip-system-certs; platform_system == "Windows"

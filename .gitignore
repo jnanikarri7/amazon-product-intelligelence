@@ -35,6 +35,8 @@ data/
 *.csv
 *.feather
 mlruns/
+mlflow.db
+mlartifacts/
 
 # ---- Databricks ----
 .databricks/
