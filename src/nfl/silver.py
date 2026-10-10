@@ -156,9 +156,12 @@ def build_silver_player_stats() -> pl.DataFrame:
 def run() -> dict[str, int]:
     SILVER_DIR.mkdir(parents=True, exist_ok=True)
     print("=== Silver build ===")
-    pbp = build_silver_pbp();            _write_silver(pbp, "pbp", ["game_id", "week"])
-    sched = build_silver_schedules();    _write_silver(sched, "schedules", ["game_id", "week"])
-    ps = build_silver_player_stats();    _write_silver(ps, "player_stats", ["player_id", "week"])
+    pbp = build_silver_pbp()
+    _write_silver(pbp, "pbp", ["game_id", "week"])
+    sched = build_silver_schedules()
+    _write_silver(sched, "schedules", ["game_id", "week"])
+    ps = build_silver_player_stats()
+    _write_silver(ps, "player_stats", ["player_id", "week"])
     counts = {"pbp": pbp.height, "schedules": sched.height, "player_stats": ps.height}
     print(f"[DONE] Silver complete: {counts}")
     return counts

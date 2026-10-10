@@ -243,5 +243,5 @@ def run() -> int:
     print(f"  wrote gold/game_features: {g.height:,} games, {g.width} cols")
     print(f"  trainable (played, non-tie): {trainable:,}  |  future: "
           f"{g.filter(~pl.col('is_played')).height:,}")
-    print(f"[DONE] Gold complete.")
+    print("[DONE] Gold complete.")
     return 0

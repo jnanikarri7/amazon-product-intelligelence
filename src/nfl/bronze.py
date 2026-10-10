@@ -15,7 +15,7 @@ import uuid
 import polars as pl
 from deltalake import write_deltalake
 
-from .config import DATASETS, BRONZE_DIR, Dataset, season_range
+from .config import BRONZE_DIR, DATASETS, Dataset, season_range
 
 LINEAGE_COLS = ("_ingest_ts", "_source_file", "_batch_id", "_source_rows")
 

@@ -1,0 +1,65 @@
+# Databricks Asset Bundle — defines the medallion + training job as code.
+# Deploy:  databricks bundle deploy -t dev
+# Run:     databricks bundle run nfl_pipeline -t dev
+#
+# The job cluster carries the ADLS OAuth config via secret references, so the
+# notebooks need no inline credentials. Replace STORAGE_ACCOUNT below (or wire it
+# through a bundle variable) and create the `nfl-adls` secret scope first.
+bundle:
+  name: nfl-prediction-platform
+
+variables:
+  storage_account:
+    description: ADLS Gen2 account name
+    default: stnflpredictXX
+
+resources:
+  jobs:
+    nfl_pipeline:
+      name: nfl-medallion-pipeline
+      tasks:
+        - task_key: bronze
+          job_cluster_key: single
+          notebook_task:
+            notebook_path: ./databricks/notebooks/01_bronze_ingest.py
+        - task_key: silver
+          depends_on: [{ task_key: bronze }]
+          job_cluster_key: single
+          notebook_task:
+            notebook_path: ./databricks/notebooks/02_silver_transform.py
+        - task_key: gold
+          depends_on: [{ task_key: silver }]
+          job_cluster_key: single
+          notebook_task:
+            notebook_path: ./databricks/notebooks/03_gold_features.py
+        - task_key: train
+          depends_on: [{ task_key: gold }]
+          job_cluster_key: single
+          notebook_task:
+            notebook_path: ./databricks/notebooks/04_train_models.py
+
+      job_clusters:
+        - job_cluster_key: single
+          new_cluster:
+            spark_version: 15.4.x-scala2.12
+            node_type_id: Standard_DS3_v2
+            num_workers: 0            # single-node = no worker DBUs (cost control)
+            custom_tags:
+              ResourceClass: SingleNode
+              project: nfl-prediction-platform
+            spark_conf:
+              spark.databricks.cluster.profile: singleNode
+              spark.master: "local[*, 4]"
+              # ADLS Gen2 OAuth via the nfl-adls secret scope (replace account name):
+              "fs.azure.account.auth.type.stnflpredictXX.dfs.core.windows.net": "OAuth"
+              "fs.azure.account.oauth.provider.type.stnflpredictXX.dfs.core.windows.net": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
+              "fs.azure.account.oauth2.client.id.stnflpredictXX.dfs.core.windows.net": "{{secrets/nfl-adls/sp-client-id}}"
+              "fs.azure.account.oauth2.client.secret.stnflpredictXX.dfs.core.windows.net": "{{secrets/nfl-adls/sp-client-secret}}"
+              "fs.azure.account.oauth2.client.endpoint.stnflpredictXX.dfs.core.windows.net": "https://login.microsoftonline.com/{{secrets/nfl-adls/sp-tenant-id}}/oauth2/token"
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: ${DATABRICKS_HOST}

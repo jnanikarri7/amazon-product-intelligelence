@@ -1,0 +1,36 @@
+name: Deploy to Databricks
+
+# Deploys the Asset Bundle and runs the medallion + training job after CI passes.
+# Requires repo secrets:
+#   DATABRICKS_HOST   e.g. https://adb-1234567890.12.azuredatabricks.net
+#   DATABRICKS_TOKEN  a workspace PAT (or OIDC + a service principal)
+
+on:
+  push:
+    branches: [feature/nfl-prediction-platform]
+  workflow_dispatch: {}
+
+jobs:
+  gate:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    needs: gate
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        run: curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Validate bundle
+        run: databricks bundle validate -t dev
+
+      - name: Deploy bundle
+        run: databricks bundle deploy -t dev
+
+      - name: Run medallion + training pipeline
+        run: databricks bundle run nfl_pipeline -t dev

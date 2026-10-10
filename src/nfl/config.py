@@ -6,9 +6,9 @@ over a single source of truth — add a dataset here and it flows everywhere.
 from __future__ import annotations
 
 import datetime as dt
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
 
 import nflreadpy as nfl
 import polars as pl

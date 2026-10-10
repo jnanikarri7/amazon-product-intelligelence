@@ -27,8 +27,13 @@ import xgboost as xgb
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from sklearn.metrics import (accuracy_score, brier_score_loss, log_loss,
-                             mean_absolute_error, roc_auc_score)
+from sklearn.metrics import (
+    accuracy_score,
+    brier_score_loss,
+    log_loss,
+    mean_absolute_error,
+    roc_auc_score,
+)
 
 from .config import GOLD_DIR, REPO_ROOT
 
@@ -120,11 +125,13 @@ def _train_classification(name: str, target: str, df: pl.DataFrame,
             model.fit(tr.select(feats).to_pandas(), tr[target].to_numpy())
             p = model.predict_proba(te.select(feats).to_pandas())[:, 1]
             y = te[target].to_numpy()
-            oof_y.append(y); oof_p.append(p)
+            oof_y.append(y)
+            oof_p.append(p)
             mlflow.log_metrics({"fold_auc": roc_auc_score(y, p),
                                 "fold_logloss": log_loss(y, p, labels=[0, 1])}, step=season)
 
-        y = np.concatenate(oof_y); p = np.concatenate(oof_p)
+        y = np.concatenate(oof_y)
+        p = np.concatenate(oof_p)
         metrics = {"auc": roc_auc_score(y, p), "logloss": log_loss(y, p),
                    "brier": brier_score_loss(y, p),
                    "accuracy": accuracy_score(y, (p >= 0.5).astype(int))}
@@ -153,9 +160,11 @@ def _train_regression(name: str, df: pl.DataFrame, feats: list[str],
             model = _make_model(name, "reg")
             model.fit(tr.select(feats).to_pandas(), tr["target_margin"].to_numpy())
             p = model.predict(te.select(feats).to_pandas())
-            oof_y.append(te["target_margin"].to_numpy()); oof_p.append(p)
+            oof_y.append(te["target_margin"].to_numpy())
+            oof_p.append(p)
             mlflow.log_metrics({"fold_mae": mean_absolute_error(oof_y[-1], p)}, step=season)
-        y = np.concatenate(oof_y); p = np.concatenate(oof_p)
+        y = np.concatenate(oof_y)
+        p = np.concatenate(oof_p)
         metrics = {"mae": mean_absolute_error(y, p),
                    "rmse": float(np.sqrt(np.mean((y - p) ** 2)))}
         mlflow.log_metrics(metrics)

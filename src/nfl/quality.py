@@ -24,7 +24,7 @@ class DataQualityReport:
     dataset: str
     results: list[QualityResult] = field(default_factory=list)
 
-    def add(self, r: QualityResult) -> "DataQualityReport":
+    def add(self, r: QualityResult) -> DataQualityReport:
         self.results.append(r)
         return self
 
