@@ -1,9 +1,15 @@
-pandas>=2.0.0
-requests>=2.31.0
-keepa>=1.3.0
-pydantic>=2.0.0
-python-dotenv>=1.0.0
-tenacity>=8.2.0
-pyyaml>=6.0
-numpy>=1.24.0
-openpyxl>=3.1.0
+# Cluster libraries for the NFL Prediction Platform.
+# Install on the Databricks cluster: Compute → <cluster> → Libraries → Install New → PyPI,
+# OR add as a notebook-scoped install:  %pip install -r requirements.txt
+#
+# Databricks Runtime 15.4 LTS already ships pyspark, delta, pandas, pyarrow, mlflow.
+
+nflreadpy>=0.1.0        # Python port of nflverse (polars-based readers)
+polars>=1.0.0           # nflreadpy returns polars DataFrames
+pyarrow>=14.0.0         # polars <-> pandas <-> spark zero-copy bridge
+
+# ---- Phases 4–6 (not needed yet, listed for completeness) ----
+# lightgbm>=4.3.0
+# xgboost>=2.0.0
+# scikit-learn>=1.4.0
+# great-expectations>=0.18.0

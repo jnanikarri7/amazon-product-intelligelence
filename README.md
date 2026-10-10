@@ -1,103 +1,40 @@
-# Amazon Product Intelligence System
+# 🏈 NFL Prediction Platform
 
-Production-grade Amazon product opportunity discovery system using Keepa API.
+Production-grade, cost-optimized NFL game prediction platform built on **Azure Databricks**,
+**ADLS Gen2**, **Delta Lake**, **MLflow**, and **LightGBM/XGBoost** — showcasing modern Data
+Engineering & MLOps practices on a **< $5/month** budget (Azure for Students).
 
-## Features
+> 🚧 Built in 6 phases. This README is a stub; the full FAANG-ready version lands in **Phase 6**.
 
-- Automated product discovery via Keepa Product Finder
-- ASIN enrichment with pricing, sales rank, reviews, and competition data
-- Multi-factor opportunity scoring (0-100)
-- SQLite storage with full history tracking
-- CSV/JSON export
-- Rate limiting and retry logic
-- Clean logging and error handling
+## Medallion architecture
 
-## Installation
+```
+nflreadpy ──► Bronze (raw Delta) ──► Silver (clean + DQ) ──► Gold (features) ──► MLflow (LightGBM/XGBoost)
+```
 
+## Build phases
+- [x] **Phase 1 — Environment & cost-optimized architecture** → see [`docs/phase1_architecture.md`](docs/phase1_architecture.md)
+- [x] **Phase 2 — Bronze ingestion** (`nflreadpy`, 2015–present) → see [`docs/phase2_bronze.md`](docs/phase2_bronze.md)
+- [ ] Phase 3 — Silver (cleaning, DQ, Z-ORDER)
+- [ ] Phase 4 — Gold (feature engineering, leakage-safe feature table)
+- [ ] Phase 5 — MLOps (walk-forward CV, MLflow tracking + registry)
+- [ ] Phase 6 — CI/CD (GitHub Actions + Databricks Workflows) & portfolio README
+
+## Repo layout
+```
+infra/terraform/     IaC: resource group, ADLS Gen2, SP, Databricks workspace
+scripts/             Azure CLI equivalent of the Terraform
+databricks/          cluster_config.json + notebooks (00_connect_adls.py …)
+docs/                architecture & phase notes
+.github/workflows/   CI/CD (Phase 6)
+```
+
+## Phase 1 quickstart
 ```bash
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+az login
+cd infra/terraform
+cp terraform.tfvars.example terraform.tfvars   # edit storage_account_name
+terraform init && terraform apply
 ```
-
-## Configuration
-
-1. Copy `.env.example` to `.env`:
-```bash
-cp .env.example .env
-```
-
-2. Add your Keepa API key to `.env`:
-```
-KEEPA_API_KEY=your_key_here
-```
-
-3. Adjust filters and scoring weights in `config.yaml`
-
-## Usage
-
-Run the full pipeline:
-```bash
-python -m src.main
-```
-
-Results are saved to:
-- `data/processed/opportunities.csv`
-- `data/processed/opportunities.json`
-- `data/amazon_products.db` (SQLite)
-
-## Project Structure
-
-```
-amazon_product_intelligence/
-├── src/
-│   ├── config.py              # Configuration management
-│   ├── keepa_client.py        # Keepa API wrapper
-│   ├── product_discovery.py   # Product finder logic
-│   ├── product_enrichment.py  # Data normalization
-│   ├── scoring.py             # Opportunity scoring engine
-│   ├── storage.py             # SQLite persistence
-│   ├── export.py              # CSV/JSON export
-│   └── main.py                # CLI entry point
-├── data/
-│   ├── raw/                   # Raw Keepa responses
-│   ├── processed/             # Scored results
-│   └── amazon_products.db     # SQLite database
-├── notebooks/
-│   └── exploratory_analysis.ipynb
-├── config.yaml
-├── .env.example
-└── requirements.txt
-```
-
-## Scoring Model
-
-Opportunity score (0-100) based on weighted factors:
-
-| Factor | Weight | Description |
-|--------|--------|-------------|
-| Demand | 30% | Sales rank stability and velocity |
-| Competition | 25% | Low seller count, high review barrier |
-| Margin | 20% | Price point and stability |
-| Simplicity | 15% | Easy to source/manufacture |
-| Price Stability | 10% | Low volatility |
-
-## Future Enhancements
-
-- Claude API integration for review sentiment analysis
-- AI-powered niche discovery
-- Streamlit dashboard
-- Automated supplier research
-- Profit calculator with FBA fees
-- Trend detection (seasonal, growth)
-
-## Compliance
-
-- Uses official Keepa API only
-- No Amazon scraping violations
-- Rate limiting respected
-- Terms of service compliant
-
-## License
-
-MIT
+Then create the Databricks secret scope and run `databricks/notebooks/00_connect_adls.py`.
+Full details: [`docs/phase1_architecture.md`](docs/phase1_architecture.md).

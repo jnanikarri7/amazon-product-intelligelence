@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars and fill in. terraform.tfvars is gitignored.
+# storage_account_name MUST be globally unique, 3-24 chars, lowercase+digits only.
+
+storage_account_name      = "stnflpredict<yourinitials>"   # e.g. stnflpredictjk
+location                  = "eastus"
+resource_group_name       = "rg-nfl-predict"
+databricks_workspace_name = "dbw-nfl-predict"
+databricks_sku            = "standard"

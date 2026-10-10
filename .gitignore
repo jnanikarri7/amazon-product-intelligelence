@@ -1,36 +1,46 @@
-# Environment
+# ---- Secrets & local config ----
 .env
+*.tfvars
+!*.tfvars.example
+secrets.properties
+*.pem
+*.key
+azure_credentials.json
+
+# ---- Terraform ----
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.*
+crash.log
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
 venv/
 env/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
 *.egg-info/
 
-# Data
-data/raw/*
-data/processed/*
-*.db
-*.sqlite
+# ---- Data (never commit raw/processed data) ----
+data/
+*.parquet
+*.delta
+*.csv
+*.feather
+mlruns/
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
+# ---- Databricks ----
+.databricks/
 
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb_checkpoints
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
+# ---- OS / IDE ----
 .DS_Store
+.idea/
+.vscode/
 Thumbs.db
-
-# Logs
-*.log
